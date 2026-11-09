@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>联系我 - Jcc作品集</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; --primary-light: #3b82f6; --primary-dark: #1d4ed8;
+            --accent: #06b6d4; --text-main: #1e293b; --text-secondary: #64748b;
+            --text-muted: #94a3b8; --bg-main: #f8fafc; --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+            --radius: 12px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main); color: var(--text-main); line-height: 1.7;
+            min-height: 100vh; position: relative; overflow-x: hidden;
+        }
+        .bg-decoration {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; overflow: hidden;
+        }
+        .bg-decoration::before {
+            content: ''; position: absolute; top: -20%; right: -10%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%);
+            border-radius: 50%; animation: float 20s ease-in-out infinite;
+        }
+        .bg-decoration::after {
+            content: ''; position: absolute; bottom: -15%; left: -5%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%);
+            border-radius: 50%; animation: float 25s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+        header {
+            background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+            padding: 0 24px; height: 64px; display: flex; align-items: center;
+            justify-content: space-between; position: sticky; top: 0; z-index: 100;
+        }
+        .logo {
+            font-size: 20px; font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; letter-spacing: -0.5px;
+        }
+        nav { display: flex; gap: 8px; align-items: center; }
+        nav a {
+            text-decoration: none; color: var(--text-secondary); font-size: 14px;
+            font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: all 0.2s;
+        }
+        nav a:hover, nav a.active { color: var(--primary); background: rgba(37,99,235,0.08); }
+        .clock { font-size: 13px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+        .container { max-width: 800px; margin: 0 auto; padding: 32px 24px 60px; }
+        .page-title { text-align: center; margin-bottom: 50px; }
+        .page-title h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;
+        }
+
+        /* 联系信息卡片 */
+        .contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .contact-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 24px; text-align: center;
+            box-shadow: var(--shadow); transition: all 0.3s ease; cursor: pointer; position: relative;
+        }
+        .contact-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--primary); }
+        .contact-icon {
+            width: 48px; height: 48px; line-height: 48px; margin: 0 auto 12px;
+            border-radius: 50%; font-size: 20px; font-weight: 700; color: #fff;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+        }
+        .contact-label { font-size: 14px; color: var(--text-secondary); margin-bottom: 6px; }
+        .contact-value { font-size: 17px; font-weight: 700; color: var(--text-main); word-break: break-all; }
+        .copy-hint {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.95); display: flex; align-items: center; justify-content: center;
+            border-radius: var(--radius); font-size: 15px; font-weight: 700; color: var(--primary);
+            opacity: 0; transition: opacity 0.2s; pointer-events: none;
+        }
+        .copy-hint.show { opacity: 1; pointer-events: auto; }
+
+        /* 表单样式 */
+        .contact-form { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 30px; box-shadow: var(--shadow); }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; font-weight: 600; margin-bottom: 8px; color: var(--text-main); }
+        .form-control {
+            width: 100%; padding: 12px 16px; border: 1px solid var(--border);
+            border-radius: 8px; font-size: 14px; color: var(--text-main);
+            transition: border-color 0.2s, box-shadow 0.2s; outline: none; background: var(--bg-main);
+        }
+        .form-control:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
+        textarea.form-control { resize: vertical; min-height: 120px; }
+        .submit-btn {
+            width: 100%; padding: 14px; border: none; border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white; font-size: 16px; font-weight: 600; cursor: pointer;
+            box-shadow: 0 4px 12px rgba(37,99,235,0.3); transition: all 0.2s;
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.4); }
+
+        footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); margin-top: 40px; }
+        @media (max-width: 640px) {
+            header { padding: 0 16px; } .container { padding: 24px 16px 48px; }
+            .contact-form { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-decoration"></div>
+<header>
+    <span class="logo">Jcc</span>
+    <nav>
+        <a href="index.html">主页</a>
+        <a href="projects.html">项目展示</a>
+        <a href="contact.html" class="active">联系我</a>
+    </nav>
+    <span class="clock" id="clock">--:--:--</span>
+</header>
+<div class="container">
+    <div class="page-title"><h1>联系我</h1></div>
+
+    <!-- 联系信息卡片 -->
+    <div class="contact-grid">
+        <div class="contact-card" onclick="window.location.href='tel:13627136240'">
+            <div class="contact-icon">电</div>
+            <div class="contact-label">电话</div>
+            <div class="contact-value">13627136240</div>
+        </div>
+        <div class="contact-card" onclick="copyText('jinchuchen', this)">
+            <div class="contact-icon">微</div>
+            <div class="contact-label">微信（点击复制）</div>
+            <div class="contact-value">jinchuchen</div>
+            <div class="copy-hint">已复制微信号</div>
+        </div>
+        <div class="contact-card" onclick="copyText('jcckas@qq.com', this)">
+            <div class="contact-icon">邮</div>
+            <div class="contact-label">邮箱（点击复制 / 长按发邮件）</div>
+            <div class="contact-value">jcckas@qq.com</div>
+            <div class="copy-hint">已复制邮箱</div>
+        </div>
+    </div>
+</script>
+</body>
+</html>

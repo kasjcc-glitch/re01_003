@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高斯泼溅 - Jcc作品集</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; --primary-light: #3b82f6; --primary-dark: #1d4ed8;
+            --accent: #8b5cf6; --pink: #ec4899;
+            --text-main: #1e293b; --text-secondary: #64748b;
+            --text-muted: #94a3b8; --bg-main: #f8fafc; --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+            --radius: 12px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main); color: var(--text-main); line-height: 1.7;
+            min-height: 100vh; position: relative; overflow-x: hidden;
+        }
+        .bg-decoration {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; overflow: hidden;
+        }
+        .bg-decoration::before {
+            content: ''; position: absolute; top: -20%; right: -10%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(139,92,246,0.08) 0%, transparent 70%);
+            border-radius: 50%; animation: float 20s ease-in-out infinite;
+        }
+        .bg-decoration::after {
+            content: ''; position: absolute; bottom: -15%; left: -5%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(236,72,153,0.06) 0%, transparent 70%);
+            border-radius: 50%; animation: float 25s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+        header {
+            background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+            padding: 0 24px; height: 64px; display: flex; align-items: center;
+            justify-content: space-between; position: sticky; top: 0; z-index: 100;
+        }
+        .logo {
+            font-size: 20px; font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; letter-spacing: -0.5px;
+        }
+        nav { display: flex; gap: 8px; align-items: center; }
+        nav a {
+            text-decoration: none; color: var(--text-secondary); font-size: 14px;
+            font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: all 0.2s;
+        }
+        nav a:hover, nav a.active { color: var(--accent); background: rgba(139,92,246,0.08); }
+        .clock { font-size: 13px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px 60px; }
+        .page-title { text-align: center; margin-bottom: 50px; }
+        .page-title h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;
+        }
+
+        /* 置顶醒目推荐大卡片（横跨整行，唯一卡片） */
+        .video-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+        .featured-card {
+            display: block; text-decoration: none; color: inherit;
+            background: linear-gradient(135deg, #f5f3ff 0%, #ffffff 55%, #fdf2f8 100%);
+            border: 2px solid var(--accent);
+            border-radius: var(--radius); overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(139,92,246,0.25);
+            cursor: pointer; position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .featured-card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px -6px rgba(139,92,246,0.35); }
+        .featured-card .video-placeholder { aspect-ratio: 21 / 9; background: linear-gradient(135deg, #0f172a, #1e293b); }
+        @media (max-width: 768px) { .featured-card .video-placeholder { aspect-ratio: 16 / 9; } }
+        .badge {
+            position: absolute; top: 16px; left: 16px; z-index: 3;
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            color: #fff; font-size: 14px; font-weight: 700;
+            padding: 6px 16px; border-radius: 999px;
+            box-shadow: 0 4px 12px rgba(139,92,246,0.4);
+            animation: blink 1.4s ease-in-out infinite;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+        }
+        .featured-info { padding: 18px 22px; }
+        .featured-title { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+        .featured-note {
+            display: inline-block; font-size: 13px; font-weight: 600;
+            color: var(--accent); background: rgba(139,92,246,0.12);
+            padding: 4px 12px; border-radius: 6px;
+        }
+        .video-placeholder {
+            width: 100%; aspect-ratio: 16 / 9; background-color: #000;
+            display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .play-icon {
+            width: 60px; height: 60px; background-color: rgba(139, 92, 246, 0.9);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .play-icon::after {
+            content: ''; display: block; width: 0; height: 0;
+            border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+            border-left: 16px solid white; margin-left: 4px;
+        }
+        .featured-card:hover .play-icon { transform: scale(1.1); background-color: var(--accent); }
+
+        .nav-buttons { display: flex; gap: 12px; margin-top: 40px; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+            padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 500;
+            transition: all 0.2s; border: none; cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--pink));
+            color: white; box-shadow: 0 4px 12px rgba(139,92,246,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(139,92,246,0.4); }
+        .btn-outline { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+        .btn-outline:hover { background: rgba(139,92,246,0.06); transform: translateY(-2px); }
+        footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); margin-top: 20px; }
+        @media (max-width: 640px) {
+            header { padding: 0 16px; } .container { padding: 24px 16px 48px; }
+            .nav-buttons { flex-direction: column; } .btn { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-decoration"></div>
+<header>
+    <span class="logo">Jcc</span>
+    <nav>
+        <a href="index.html">主页</a>
+        <a href="projects.html" class="active">项目展示</a>
+        <a href="contact.html">联系我</a>
+    </nav>
+    <span class="clock" id="clock">--:--:--</span>
+</header>
+<div class="container">
+    <div class="page-title"><h1>高斯泼溅</h1></div>
+    <div class="video-grid">
+        <a class="featured-card" href="https://www.xinpianchang.com/a13832420?from=private_pwd&pwd=fdvv" target="_blank" rel="noopener">
+            <span class="badge">&#9733; 高斯泼溅 · 重点推荐</span>
+            <div class="video-placeholder"><div class="play-icon"></div></div>
+            <div class="featured-info">
+                <div class="featured-title">高斯泼溅展示</div>
+                <span class="featured-note">在新片场查看 →</span>
+            </div>
+        </a>
+    </div>
+    <div class="nav-buttons">
+        <a href="projects.html" class="btn btn-outline">← 项目列表</a>
+        <a href="contact.html" class="btn btn-primary">联系我 →</a>
+    </div>
+</div>
+<footer>Jcc Portfolio &copy; 2026</footer>
+
+<script>
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+</script>
+</body>
+</html>

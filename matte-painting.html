@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>数字绘景 - Jcc作品集</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; --primary-light: #3b82f6;
+            --accent: #0891b2; --cyan: #06b6d4;
+            --text-main: #1e293b; --text-secondary: #64748b; --text-muted: #94a3b8;
+            --bg-main: #f8fafc; --bg-card: #ffffff; --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.05);
+            --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.05);
+            --radius: 12px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-main); color: var(--text-main); line-height: 1.7;
+            min-height: 100vh; position: relative; overflow-x: hidden;
+        }
+        .bg-decoration { position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: -1; overflow: hidden; }
+        .bg-decoration::before {
+            content: ''; position: absolute; top: -20%; right: -10%;
+            width: 600px; height: 600px;
+            background: radial-gradient(circle, rgba(37,99,235,0.08) 0%, transparent 70%);
+            border-radius: 50%; animation: float 20s ease-in-out infinite;
+        }
+        .bg-decoration::after {
+            content: ''; position: absolute; bottom: -15%; left: -5%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(6,182,212,0.06) 0%, transparent 70%);
+            border-radius: 50%; animation: float 25s ease-in-out infinite reverse;
+        }
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.05); }
+            66% { transform: translate(-20px, 20px) scale(0.95); }
+        }
+        header {
+            background: rgba(255,255,255,0.85); backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border);
+            padding: 0 24px; height: 64px; display: flex; align-items: center;
+            justify-content: space-between; position: sticky; top: 0; z-index: 100;
+        }
+        .logo {
+            font-size: 20px; font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--cyan));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text; letter-spacing: -0.5px;
+        }
+        nav { display: flex; gap: 8px; align-items: center; }
+        nav a {
+            text-decoration: none; color: var(--text-secondary); font-size: 14px;
+            font-weight: 500; padding: 8px 16px; border-radius: 8px; transition: all 0.2s;
+        }
+        nav a:hover, nav a.active { color: var(--primary); background: rgba(37,99,235,0.08); }
+        .clock { font-size: 13px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+        .container { max-width: 1000px; margin: 0 auto; padding: 32px 24px 60px; }
+        .page-title { text-align: center; margin-bottom: 40px; }
+        .page-title h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; display: inline-block;
+        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px; margin-bottom: 40px; }
+        .video-card {
+            background: linear-gradient(135deg, #ecfeff 0%, #ffffff 55%, #eff6ff 100%);
+            border: 2px solid var(--accent); border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow-lg); cursor: pointer; position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .video-card:hover { transform: translateY(-4px); box-shadow: 0 16px 32px -6px rgba(6,182,212,0.35); }
+        .video-placeholder {
+            width: 100%; aspect-ratio: 16 / 9; background: linear-gradient(135deg, #0f172a, #1e293b);
+            display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .play-icon {
+            width: 60px; height: 60px; background-color: rgba(37, 99, 235, 0.9);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .play-icon::after {
+            content: ''; display: block; width: 0; height: 0;
+            border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+            border-left: 16px solid white; margin-left: 4px;
+        }
+        .video-card:hover .play-icon { transform: scale(1.1); background-color: var(--primary); }
+        .video-info { padding: 16px 20px; }
+        .video-title { font-size: 16px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
+        .video-note { font-size: 13px; color: var(--text-secondary); }
+        .img-card {
+            background: var(--bg-card); border: 1px solid var(--border);
+            border-radius: var(--radius); overflow: hidden;
+            box-shadow: var(--shadow); cursor: pointer; position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .img-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: var(--accent); }
+        .img-thumb {
+            width: 100%; aspect-ratio: 16 / 9; background: #f1f5f9;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+        }
+        .img-thumb img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .img-card:hover .img-thumb img { transform: scale(1.05); }
+        .img-info { padding: 14px 18px; }
+        .img-title { font-size: 14px; font-weight: 600; color: var(--text-main); word-break: break-all; }
+        .lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); z-index: 9999; align-items: center; justify-content: center;
+        }
+        .lightbox.show { display: flex; }
+        .lightbox-content { max-width: 90%; max-height: 90%; position: relative; text-align: center; }
+        .lightbox video {
+            max-width: 100%; max-height: 85vh; border-radius: 8px;
+            box-shadow: 0 0 30px rgba(37,99,235,0.3); outline: none;
+        }
+        .close-btn {
+            position: absolute; top: -50px; right: 0; color: white;
+            font-size: 36px; cursor: pointer; transition: 0.3s; line-height: 1; z-index: 2;
+        }
+        .close-btn:hover { color: var(--primary); transform: rotate(90deg); }
+        .play-hint { color: #fbbf24; font-size: 13px; font-weight: 600; display: none; margin-top: 12px; }
+        .play-hint.show { display: block; }
+        .retry-btn {
+            display: none; margin-top: 20px; padding: 8px 20px;
+            background: var(--primary); color: white; border: none; border-radius: 6px;
+            cursor: pointer; font-size: 14px;
+        }
+        .retry-btn.show { display: inline-block; }
+        .img-lightbox {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9); z-index: 9999;
+            align-items: center; justify-content: center; cursor: zoom-out;
+        }
+        .img-lightbox.show { display: flex; }
+        .img-lightbox img {
+            max-width: 95%; max-height: 95vh; object-fit: contain;
+            border-radius: 4px; box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            animation: fadeIn 0.2s ease;
+        }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .nav-buttons { display: flex; gap: 12px; margin-top: 40px; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px; text-decoration: none;
+            padding: 10px 22px; border-radius: 8px; font-size: 14px; font-weight: 500;
+            transition: all 0.2s; border: none; cursor: pointer;
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: white; box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+        }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(37,99,235,0.4); }
+        .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+        .btn-outline:hover { background: rgba(37,99,235,0.06); transform: translateY(-2px); }
+        footer { text-align: center; padding: 24px; color: var(--text-muted); font-size: 13px; border-top: 1px solid var(--border); margin-top: 20px; }
+        @media (max-width: 640px) {
+            header { padding: 0 16px; } .container { padding: 24px 16px 48px; }
+            .nav-buttons { flex-direction: column; } .btn { justify-content: center; }
+            .grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+<div class="bg-decoration"></div>
+<header>
+    <span class="logo">Jcc</span>
+    <nav>
+        <a href="index.html">主页</a>
+        <a href="projects.html" class="active">项目展示</a>
+        <a href="contact.html">联系我</a>
+    </nav>
+    <span class="clock" id="clock">--:--:--</span>
+</header>
+<div class="container">
+    <div class="page-title"><h1>数字绘景</h1></div>
+
+    <!-- 视频展示区 -->
+    <div class="grid">
+        <div class="video-card" onclick="openLightbox('assets/731_ep04_sch_0130_comp_v003.mp4')">
+            <div class="video-placeholder"><div class="play-icon"></div></div>
+            <div class="video-info">
+                <div class="video-title">731_ep04_sch_0130_comp_v003.mp4</div>
+                <div class="video-note">数字绘景 · 合成</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 图片展示区 -->
+    <div class="grid">
+        <div class="img-card" onclick="openImageLightbox('assets/Snipaste_2026-09-28_20-50-59.png')">
+            <div class="img-thumb">
+                <img src="assets/Snipaste_2026-09-28_20-50-59.png" alt="数字绘景 PNG 1" onerror="this.style.display='none'">
+            </div>
+            <div class="img-info">
+                <div class="img-title">Snipaste_2026-09-28_20-50-59.png</div>
+            </div>
+        </div>
+        <div class="img-card" onclick="openImageLightbox('assets/Snipaste_2026-09-28_20-51-53.png')">
+            <div class="img-thumb">
+                <img src="assets/Snipaste_2026-09-28_20-51-53.png" alt="数字绘景 PNG 2" onerror="this.style.display='none'">
+            </div>
+            <div class="img-info">
+                <div class="img-title">Snipaste_2026-09-28_20-51-53.png</div>
+            </div>
+        </div>
+        <div class="img-card" onclick="openImageLightbox('assets/Snipaste_2026-09-28_20-52-08.png')">
+            <div class="img-thumb">
+                <img src="assets/Snipaste_2026-09-28_20-52-08.png" alt="数字绘景 PNG 3" onerror="this.style.display='none'">
+            </div>
+            <div class="img-info">
+                <div class="img-title">Snipaste_2026-09-28_20-52-08.png</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="nav-buttons">
+        <a href="projects.html" class="btn btn-outline">← 项目列表</a>
+        <a href="contact.html" class="btn btn-primary">联系我 →</a>
+    </div>
+</div>
+<footer>Jcc Portfolio © 2026</footer>
+
+<!-- 视频弹窗 -->
+<div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+    <div class="lightbox-content">
+        <span class="close-btn" onclick="closeLightbox(event)">&times;</span>
+        <video id="lb-video" controls playsinline preload="metadata"></video>
+        <div id="playHint" class="play-hint">若无声，请点击视频右下角音量图标开启声音</div>
+        <button id="retryBtn" class="retry-btn" onclick="retryLoadVideo()">重新加载视频</button>
+    </div>
+</div>
+
+<!-- 图片弹窗 -->
+<div id="imgLightbox" class="img-lightbox" onclick="closeImageLightbox(event)">
+    <img id="previewImg" src="" alt="Preview">
+</div>
+
+<script>
+    setInterval(() => { document.getElementById('clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+
+    const lightbox = document.getElementById('lightbox');
+    const videoPlayer = document.getElementById('lb-video');
+    const playHint = document.getElementById('playHint');
+    const retryBtn = document.getElementById('retryBtn');
+
+    function resetVideo() {
+        videoPlayer.pause();
+        videoPlayer.removeAttribute('src');
+        videoPlayer.load();
+        playHint.classList.remove('show');
+        retryBtn.classList.remove('show');
+        document.body.style.overflow = '';
+    }
+
+    function openLightbox(videoSrc) {
+        resetVideo();
+        videoPlayer.src = videoSrc;
+        lightbox.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        videoPlayer.muted = true;
+        const p = videoPlayer.play();
+        if (p !== undefined) {
+            p.then(() => { videoPlayer.muted = false; }).catch(() => {
+                videoPlayer.muted = true;
+                playHint.classList.add('show');
+            });
+        }
+    }
+
+    function closeLightbox(e) {
+        if (e.target !== videoPlayer) { lightbox.classList.remove('show'); resetVideo(); }
+    }
+
+    function retryLoadVideo() {
+        const currentSrc = videoPlayer.src;
+        videoPlayer.load();
+        setTimeout(() => { videoPlayer.src = currentSrc; }, 100);
+    }
+
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            if (lightbox.classList.contains('show')) { lightbox.classList.remove('show'); resetVideo(); }
+            if (imgLightbox.classList.contains('show')) { imgLightbox.classList.remove('show'); document.body.style.overflow = ''; }
+        }
+    });
+
+    videoPlayer.addEventListener('error', () => { retryBtn.classList.add('show'); });
+
+    const imgLightbox = document.getElementById('imgLightbox');
+    const previewImg = document.getElementById('previewImg');
+
+    function openImageLightbox(src) {
+        previewImg.src = src;
+        imgLightbox.classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeImageLightbox(e) {
+        imgLightbox.classList.remove('show');
+        previewImg.src = '';
+        document.body.style.overflow = '';
+    }
+</script>
+</body>
+</html>

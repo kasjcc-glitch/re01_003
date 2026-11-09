@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后期合成 - Jcc作品集</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #2563eb; 
+            --primary-hover: #1d4ed8;
+            --accent: #f97316;
+            --text-main: #1e293b; 
+            --text-secondary: #64748b;
+            --bg-page: #f8fafc; 
+            --bg-card: #ffffff;
+            --border-color: #e2e8f0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.1);
+            --radius: 12px;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            line-height: 1.6;
+        }
+        header {
+            background-color: var(--bg-card);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 100;
+            box-shadow: var(--shadow-sm);
+        }
+        .nav-container {
+            max-width: 1200px; margin: 0 auto; padding: 0 20px;
+            height: 70px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .logo {
+            font-size: 24px; font-weight: 700; color: var(--primary);
+            text-decoration: none; letter-spacing: -0.5px;
+        }
+        .nav-links { display: flex; gap: 30px; }
+        .nav-links a {
+            text-decoration: none; color: var(--text-secondary);
+            font-weight: 500; transition: color 0.3s ease;
+        }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary); }
+        main { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        h1 { text-align: center; font-size: 32px; margin-bottom: 40px; color: var(--text-main); font-weight: 700; }
+        .video-grid { display: grid; grid-template-columns: 1fr; gap: 30px; }
+
+        /* 置顶醒目推荐大卡片（点击即跳转外链） */
+        .featured-card {
+            display: block; text-decoration: none; color: inherit;
+            background: linear-gradient(135deg, #fff7ed 0%, #ffffff 55%, #eff6ff 100%);
+            border: 2px solid var(--accent);
+            border-radius: var(--radius); overflow: hidden;
+            box-shadow: 0 10px 25px -5px rgba(249,115,22,0.25);
+            cursor: pointer; position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .featured-card:hover { transform: translateY(-5px); box-shadow: 0 16px 32px -6px rgba(249,115,22,0.35); }
+        .featured-card .video-placeholder { aspect-ratio: 21 / 9; background: linear-gradient(135deg, #0f172a, #1e293b); }
+        @media (max-width: 768px) { .featured-card .video-placeholder { aspect-ratio: 16 / 9; } }
+        .badge {
+            position: absolute; top: 16px; left: 16px; z-index: 3;
+            background: linear-gradient(135deg, var(--accent), #ef4444);
+            color: #fff; font-size: 14px; font-weight: 700;
+            padding: 6px 16px; border-radius: 999px;
+            box-shadow: 0 4px 12px rgba(249,115,22,0.4);
+            animation: blink 1.4s ease-in-out infinite;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+        }
+        .featured-info { padding: 18px 22px; }
+        .featured-title { font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 6px; }
+        .featured-note {
+            display: inline-block; font-size: 13px; font-weight: 600;
+            color: var(--accent); background: rgba(249,115,22,0.12);
+            padding: 4px 12px; border-radius: 6px;
+        }
+
+        .video-placeholder {
+            width: 100%; aspect-ratio: 16 / 9; background-color: #000;
+            display: flex; align-items: center; justify-content: center; position: relative;
+        }
+        .play-icon {
+            width: 60px; height: 60px; background-color: rgba(37, 99, 235, 0.9);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transition: transform 0.2s ease, background-color 0.2s ease;
+        }
+        .play-icon::after {
+            content: ''; display: block; width: 0; height: 0;
+            border-top: 10px solid transparent; border-bottom: 10px solid transparent;
+            border-left: 16px solid white; margin-left: 4px;
+        }
+        .featured-card:hover .play-icon { transform: scale(1.1); background-color: var(--primary); }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="nav-container">
+            <a href="index.html" class="logo">Jcc作品集</a>
+            <nav class="nav-links">
+                <a href="index.html">主页</a>
+                <a href="projects.html" class="active">项目展示</a>
+                <a href="contact.html">联系我</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <h1>后期合成</h1>
+        <div class="video-grid">
+            <!-- 合成汇总 → 新片场外链（点击即跳转，密码内置） -->
+            <a class="featured-card" href="https://www.xinpianchang.com/a13832511?from=private_pwd&pwd=ygrk" target="_blank" rel="noopener">
+                <span class="badge">&#9733; 合成汇总 · 重点推荐</span>
+                <div class="video-placeholder"><div class="play-icon"></div></div>
+                <div class="featured-info">
+                    <div class="featured-title">后期合成汇总</div>
+                    <span class="featured-note">在新片场查看 →</span>
+                </div>
+            </a>
+        </div>
+    </main>
+</body>
+</html>
